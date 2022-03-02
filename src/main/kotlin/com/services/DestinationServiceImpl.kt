@@ -21,4 +21,14 @@ class DestinationServiceImpl(){
         return false
     }
 
+     fun update(destination: DestinationEntity, name: String, priority: Int): DestinationEntity {
+        destination.name = name
+        destination.priority = priority
+        return repo.update(destination)
+    }
+
+    fun findAll(): List<DestinationEntity> {
+        return repo.findAll()
+    }
+
 }

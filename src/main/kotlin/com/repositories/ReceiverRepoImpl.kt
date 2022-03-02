@@ -1,6 +1,7 @@
 package com.repositories
 
 import com.model.DestinationEntity
+import com.model.ReceiverEntity
 import com.models.Destination
 import jakarta.inject.Singleton
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
@@ -14,45 +15,53 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import java.net.URI
 
 @Singleton
-class DestinationRepoImpl {
+class ReceiverRepoImpl {
 
-    val table: DynamoDbTable<DestinationEntity> = dynamoDbTable()
+    val table: DynamoDbTable<ReceiverEntity> = dynamoDbTable()
 
-    fun save(destination: DestinationEntity): DestinationEntity {
+    fun save(destination: ReceiverEntity): ReceiverEntity {
         table.putItem(destination)
         return destination
     }
 
-    fun deleteByName(name: String): DestinationEntity? {
+    fun deleteByName(name: String): ReceiverEntity? {
 
         val key = Key.builder()
-            .partitionValue(AttributeValue.builder().s("destination").build())
+            .partitionValue(AttributeValue.builder().s("receiver").build())
             .sortValue(AttributeValue.builder().s(name).build())
             .build()
         return table.deleteItem { r -> r.key(key) }
     }
 
-     fun update(destination: DestinationEntity): DestinationEntity {
-        return table.updateItem(destination)
+    fun update(receiver: ReceiverEntity): ReceiverEntity {
+        return table.updateItem(receiver)
     }
 
-    fun findAll(): List<DestinationEntity> {
-        val destinations = ArrayList<DestinationEntity>()
+    fun findAll() : List<ReceiverEntity>{
+        val receivers = ArrayList<ReceiverEntity>()
         val queryConditional = QueryConditional
             .keyEqualTo(
                 Key.builder()
-                    .partitionValue("destination")
+                    .partitionValue("receiver")
                     .build()
             )
         val results = table.query(queryConditional).items().iterator();
-
         while (results.hasNext()) {
-            destinations.add(results.next())
+            receivers.add(results.next())
         }
-        return destinations
+
+        return receivers
     }
 
-    private fun dynamoDbTable(): DynamoDbTable<DestinationEntity> {
+    fun scanAll(): MutableIterable<ReceiverEntity>{
+        var items = table.scan().items()
+
+        return table.scan().items()
+
+    }
+
+
+    private fun dynamoDbTable(): DynamoDbTable<ReceiverEntity> {
 
         val region = Region.of("us-east-1")
 
@@ -65,7 +74,7 @@ class DestinationRepoImpl {
             .build()
 
         return dynamoDbClientEnhancedClient
-            .table("TestTable", TableSchema.fromBean(DestinationEntity::class.java))
+            .table("TestTable", TableSchema.fromBean(ReceiverEntity::class.java))
     }
 
 }

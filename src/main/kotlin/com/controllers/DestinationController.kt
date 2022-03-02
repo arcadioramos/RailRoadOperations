@@ -8,6 +8,7 @@ import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Delete
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Patch
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Produces
 
@@ -18,8 +19,8 @@ class DestinationController {
 
 
     @Get("/")
-    fun helloWorld(): String{
-        return "Hello world"
+    fun findAll(): List<DestinationEntity>{
+        return service.findAll()
     }
 
     val service = DestinationServiceImpl()
@@ -30,6 +31,12 @@ class DestinationController {
     fun save(destination: DestinationEntity): DestinationEntity {
         service.save(destination)
         return destination
+    }
+
+    @Patch("/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun update(destination: DestinationEntity, name: String, priority: Int): DestinationEntity{
+        return service.update(destination, name, priority)
     }
 
     @Delete("/{name}")
